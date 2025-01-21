@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const icon = link.querySelector('i');
       if (icon) {
           icon.style.transform = show ? 'rotate(0deg)' : 'rotate(-90deg)';
-          icon.style.transition = '0.7s';
+          // Removed the transition property to let CSS handle it
       }
   }
   
