@@ -410,7 +410,7 @@ section {
 
   .nav-btn {
     position: fixed;
-    height: calc(100vh - 72px);
+    height: auto;
     top: 72px;
     left: 0;
     width: 100%;
