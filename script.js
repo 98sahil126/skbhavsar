@@ -5,11 +5,24 @@ document.addEventListener('DOMContentLoaded', function() {
   const checkbox = document.getElementById('check');
   const navBtn = document.querySelector('.nav-btn');
   const hamburgerContainer = document.querySelector('.hamburger-menu-container');
+
+  // Function to toggle icon rotation
+  function toggleIconRotation(link, show) {
+      const icon = link.querySelector('i');
+      if (icon) {
+          icon.style.transform = show ? 'rotate(0deg)' : 'rotate(-90deg)';
+          icon.style.transition = '0.7s';
+      }
+  }
   
   // Function to close all dropdowns
   function closeAllDropdowns() {
       document.querySelectorAll('.dropdown').forEach(dropdown => {
           dropdown.style.display = 'none';
+      });
+      // Reset all icons
+      document.querySelectorAll('.nav-link > a > i, .dropdown-link > a > i').forEach(icon => {
+          icon.style.transform = 'rotate(-90deg)';
       });
   }
 
@@ -35,14 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
   }
 
-  // Function to close child dropdowns of a parent
-  function closeChildDropdowns(parent) {
-      const childDropdowns = parent.querySelectorAll('.dropdown');
-      childDropdowns.forEach(dropdown => {
-          dropdown.style.display = 'none';
-      });
-  }
-
   // Handle mobile nav link clicks/touches
   navLinks.forEach(link => {
       const linkAnchor = link.querySelector('a');
@@ -56,12 +61,13 @@ document.addEventListener('DOMContentLoaded', function() {
                       e.preventDefault();
                       e.stopPropagation();
 
-                      // Close other top-level dropdowns
+                      // Close other top-level dropdowns and reset their icons
                       navLinks.forEach(otherLink => {
                           if (otherLink !== link) {
                               const otherDropdown = otherLink.querySelector('.dropdown');
                               if (otherDropdown) {
                                   otherDropdown.style.display = 'none';
+                                  toggleIconRotation(otherLink.querySelector('a'), false);
                               }
                           }
                       });
@@ -69,9 +75,11 @@ document.addEventListener('DOMContentLoaded', function() {
                       // Toggle current dropdown
                       const isVisible = dropdown.style.display === 'block';
                       closeAllDropdowns();
-                      dropdown.style.display = isVisible ? 'none' : 'block';
+                      if (!isVisible) {
+                          dropdown.style.display = 'block';
+                          toggleIconRotation(linkAnchor, true);
+                      }
                   }
-                  // If no dropdown, let the link work normally
               }
           }, { passive: false });
       });
@@ -90,22 +98,24 @@ document.addEventListener('DOMContentLoaded', function() {
                       e.preventDefault();
                       e.stopPropagation();
 
-                      // Close sibling dropdowns
+                      // Close sibling dropdowns and reset their icons
                       const siblings = link.parentElement.children;
                       Array.from(siblings).forEach(sibling => {
                           if (sibling !== link) {
                               const siblingDropdown = sibling.querySelector('.dropdown');
                               if (siblingDropdown) {
                                   siblingDropdown.style.display = 'none';
+                                  const siblingAnchor = sibling.querySelector('a');
+                                  toggleIconRotation(siblingAnchor, false);
                               }
                           }
                       });
 
-                      // Toggle current dropdown
+                      // Toggle current dropdown and icon
                       const isVisible = subDropdown.style.display === 'block';
                       subDropdown.style.display = isVisible ? 'none' : 'block';
+                      toggleIconRotation(linkAnchor, !isVisible);
                   }
-                  // If no subdropdown, let the link work normally
               }
           }, { passive: false });
       });
@@ -132,9 +142,12 @@ document.addEventListener('DOMContentLoaded', function() {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(function() {
           if (window.innerWidth > 920) {
-              // Reset all dropdown displays
+              // Reset all dropdown displays and icons
               document.querySelectorAll('.dropdown').forEach(dropdown => {
                   dropdown.style = '';
+              });
+              document.querySelectorAll('.nav-link > a > i, .dropdown-link > a > i').forEach(icon => {
+                  icon.style.transform = '';
               });
           }
       }, 250);
@@ -147,8 +160,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
   });
 });
-
-
 
 
 
