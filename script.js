@@ -1,133 +1,144 @@
 
-
-// navbar
-
 document.addEventListener('DOMContentLoaded', function() {
-  // Store references to frequently used elements
-  const navLinks = document.querySelectorAll('.nav-link');
-  const dropdownLinks = document.querySelectorAll('.dropdown-link');
+    // Store references to frequently used elements
+    const navLinks = document.querySelectorAll('.nav-link');
+    const dropdownLinks = document.querySelectorAll('.dropdown-link');
+    const checkbox = document.getElementById('check');
+    const navBtn = document.querySelector('.nav-btn');
+    const hamburgerContainer = document.querySelector('.hamburger-menu-container');
+    
+    // Function to close all dropdowns
+    function closeAllDropdowns() {
+        document.querySelectorAll('.dropdown').forEach(dropdown => {
+            dropdown.style.display = 'none';
+        });
+    }
   
-  // Function to close all dropdowns
-  function closeAllDropdowns() {
-      document.querySelectorAll('.dropdown').forEach(dropdown => {
-          dropdown.style.display = 'none';
-      });
-  }
-
-  // Function to close all child dropdowns of a parent
-  function closeChildDropdowns(parent) {
-      const childDropdowns = parent.querySelectorAll('.dropdown');
-      childDropdowns.forEach(dropdown => {
-          dropdown.style.display = 'none';
-      });
-  }
-
-  // Handle mobile nav link clicks
-  navLinks.forEach(link => {
-      const linkAnchor = link.querySelector('a');
-      const dropdown = link.querySelector('.dropdown');
-
-      linkAnchor.addEventListener('click', function(e) {
-          if (window.innerWidth <= 920) {
-              // Only prevent default if there's a dropdown
-              if (dropdown) {
-                  e.preventDefault();
-                  e.stopPropagation();
-
-                  // Close other top-level dropdowns
-                  navLinks.forEach(otherLink => {
-                      if (otherLink !== link) {
-                          const otherDropdown = otherLink.querySelector('.dropdown');
-                          if (otherDropdown) {
-                              otherDropdown.style.display = 'none';
-                          }
-                      }
-                  });
-
-                  // Toggle current dropdown
-                  const isVisible = dropdown.style.display === 'block';
-                  closeAllDropdowns();
-                  dropdown.style.display = isVisible ? 'none' : 'block';
-              }
-              // If no dropdown, let the link work normally
-          }
-      });
+    // Function to close hamburger menu
+    function closeHamburgerMenu() {
+        checkbox.checked = false;
+        closeAllDropdowns();
+    }
+  
+    // Function to close child dropdowns of a parent
+    function closeChildDropdowns(parent) {
+        const childDropdowns = parent.querySelectorAll('.dropdown');
+        childDropdowns.forEach(dropdown => {
+            dropdown.style.display = 'none';
+        });
+    }
+  
+    // Handle mobile nav link clicks
+    navLinks.forEach(link => {
+        const linkAnchor = link.querySelector('a');
+        const dropdown = link.querySelector('.dropdown');
+  
+        linkAnchor.addEventListener('click', function(e) {
+            if (window.innerWidth <= 920) {
+                // Only prevent default if there's a dropdown
+                if (dropdown) {
+                    e.preventDefault();
+                    e.stopPropagation();
+  
+                    // Close other top-level dropdowns
+                    navLinks.forEach(otherLink => {
+                        if (otherLink !== link) {
+                            const otherDropdown = otherLink.querySelector('.dropdown');
+                            if (otherDropdown) {
+                                otherDropdown.style.display = 'none';
+                            }
+                        }
+                    });
+  
+                    // Toggle current dropdown
+                    const isVisible = dropdown.style.display === 'block';
+                    closeAllDropdowns();
+                    dropdown.style.display = isVisible ? 'none' : 'block';
+                }
+                // If no dropdown, let the link work normally
+            }
+        });
+    });
+  
+    // Handle dropdown link clicks
+    dropdownLinks.forEach(link => {
+        const linkAnchor = link.querySelector('a');
+        const subDropdown = link.querySelector('.dropdown');
+  
+        linkAnchor.addEventListener('click', function(e) {
+            if (window.innerWidth <= 920) {
+                // Only prevent default if there's a subdropdown
+                if (subDropdown) {
+                    e.preventDefault();
+                    e.stopPropagation();
+  
+                    // Close sibling dropdowns
+                    const siblings = link.parentElement.children;
+                    Array.from(siblings).forEach(sibling => {
+                        if (sibling !== link) {
+                            const siblingDropdown = sibling.querySelector('.dropdown');
+                            if (siblingDropdown) {
+                                siblingDropdown.style.display = 'none';
+                            }
+                        }
+                    });
+  
+                    // Toggle current dropdown
+                    const isVisible = subDropdown.style.display === 'block';
+                    subDropdown.style.display = isVisible ? 'none' : 'block';
+                }
+                // If no subdropdown, let the link work normally
+            }
+        });
+    });
+  
+    // Check if an element has a dropdown
+    function hasDropdown(element) {
+        return element.querySelector('.dropdown') !== null;
+    }
+  
+    // Check if element is a simple link
+    function isSimpleLink(element) {
+        return element.tagName.toLowerCase() === 'a' && !hasDropdown(element.parentElement);
+    }
+  
+    // Close dropdowns and menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 920) {
+            // Don't close if clicking checkbox, nav-btn, or hamburger menu
+            if (!checkbox.contains(e.target) && 
+                !navBtn.contains(e.target) && 
+                !hamburgerContainer.contains(e.target)) {
+                closeHamburgerMenu();
+            }
+            // Handle dropdown closing
+            else if (!e.target.closest('.nav-links') && !isSimpleLink(e.target)) {
+                closeAllDropdowns();
+            }
+        }
+    });
+  
+    // Handle window resize
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            if (window.innerWidth > 920) {
+                // Reset all dropdown displays
+                document.querySelectorAll('.dropdown').forEach(dropdown => {
+                    dropdown.style = '';
+                });
+            }
+        }, 250);
+    });
+  
+    // Handle hamburger menu checkbox
+    checkbox.addEventListener('change', function() {
+        if (!this.checked) {
+            closeAllDropdowns();
+        }
+    });
   });
-
-  // Handle dropdown link clicks
-  dropdownLinks.forEach(link => {
-      const linkAnchor = link.querySelector('a');
-      const subDropdown = link.querySelector('.dropdown');
-
-      linkAnchor.addEventListener('click', function(e) {
-          if (window.innerWidth <= 920) {
-              // Only prevent default if there's a subdropdown
-              if (subDropdown) {
-                  e.preventDefault();
-                  e.stopPropagation();
-
-                  // Close sibling dropdowns
-                  const siblings = link.parentElement.children;
-                  Array.from(siblings).forEach(sibling => {
-                      if (sibling !== link) {
-                          const siblingDropdown = sibling.querySelector('.dropdown');
-                          if (siblingDropdown) {
-                              siblingDropdown.style.display = 'none';
-                          }
-                      }
-                  });
-
-                  // Toggle current dropdown
-                  const isVisible = subDropdown.style.display === 'block';
-                  subDropdown.style.display = isVisible ? 'none' : 'block';
-              }
-              // If no subdropdown, let the link work normally
-          }
-      });
-  });
-
-  // Check if an element has a dropdown
-  function hasDropdown(element) {
-      return element.querySelector('.dropdown') !== null;
-  }
-
-  // Check if element is a link without dropdown
-  function isSimpleLink(element) {
-      return element.tagName.toLowerCase() === 'a' && !hasDropdown(element.parentElement);
-  }
-
-  // Close dropdowns when clicking outside
-  document.addEventListener('click', function(e) {
-      if (window.innerWidth <= 920) {
-          // Don't close if clicking a simple link
-          if (!e.target.closest('.nav-links') && !isSimpleLink(e.target)) {
-              closeAllDropdowns();
-          }
-      }
-  });
-
-  // Handle window resize
-  let resizeTimer;
-  window.addEventListener('resize', function() {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function() {
-          if (window.innerWidth > 920) {
-              // Reset all dropdown displays
-              document.querySelectorAll('.dropdown').forEach(dropdown => {
-                  dropdown.style = '';
-              });
-          }
-      }, 250);
-  });
-
-  // Handle hamburger menu checkbox
-  const checkbox = document.getElementById('check');
-  checkbox.addEventListener('change', function() {
-      if (!this.checked) {
-          closeAllDropdowns();
-      }
-  });
-});
 
 
 
